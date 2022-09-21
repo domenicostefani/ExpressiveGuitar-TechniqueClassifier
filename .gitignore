@@ -1,3 +1,9 @@
+*.csv
+logs
+output/*
+feature_selection.txt
+model_architecture_code.txt
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
