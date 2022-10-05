@@ -1,5 +1,7 @@
 *.csv
 *.pickle
+/expressive-technique-classifier-phase3.py
+output
 logs
 output/*
 feature_selection.txt
