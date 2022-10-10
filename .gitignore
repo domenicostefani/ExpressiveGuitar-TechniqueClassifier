@@ -2,8 +2,10 @@
 *.pickle
 /expressive-technique-classifier-phase3.py
 output
+old-output
 logs
 output/*
+old-output/*
 feature_selection.txt
 model_architecture_code.txt
 
