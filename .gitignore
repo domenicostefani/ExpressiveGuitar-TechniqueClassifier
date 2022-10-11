@@ -8,6 +8,7 @@ output/*
 old-output/*
 feature_selection.txt
 model_architecture_code.txt
+current_output.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
