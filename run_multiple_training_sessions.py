@@ -6,6 +6,8 @@ import subprocess
 from glob import glob
 import shutil
 
+VERBOSE = True
+
 OUTPUT_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'output')
 
 START_FROM_RUN_NUMBER = 1 # Change this to the run number you want to start from !!! WARNING !!! 1-based indexing
@@ -44,25 +46,25 @@ print('#----------------------------#')
 print('# Parameter value ranges:    #')
 print('#----------------------------#')
 
-features_params = list(range(50,150,20)) + list(range(150,210,30)) + list(range(210,381,50))
+features_params = list(range(10,50,15)) + list(range(50,450,80))
 print('Feature parameters:',features_params)
 
-net_depth_params = [3,5,8]
+net_depth_params = [1,2,3]
 print('Net depth parameters:',net_depth_params)
 
-net_width_params = [80,100,200,400,800]
+net_width_params = [20,40,50,100,200]
 print('Net width parameters:',net_width_params)
 
-dropout_rate_params = [0.15,0.3,0.5]
+dropout_rate_params = [0.15,0.3,0.5,0.8]
 print('Dropout rate parameters:',dropout_rate_params)
 
-learning_rate_params = [0.0001]
+learning_rate_params = [0.0001,0.001]
 print('Learning rate parameters:',learning_rate_params)
 
-batchsize_params = list(reversed([256,512,1024]))
+batchsize_params = [1024]
 print('Batch size parameters:',batchsize_params)
 
-train_epochs_params = [1000]
+train_epochs_params = [10,50,100,200]
 print('Train epochs parameters:',train_epochs_params)
 
 k_fold_parameters = [5]
@@ -78,7 +80,6 @@ assert len(product) == expected_length
 
 
 
-
 # for strparameters in strproduct:
 #     if strparameters in runs_done:
 #         print('Run already done: '+str(strparameters) + '. Skipping...')
@@ -88,7 +89,8 @@ strproduct = [[str(inel) for inel in el] for el in product]
 for rd in runs_done:
     if not rd in strproduct:
         curname = [k for k,v in runs_done_dict.items() if [str(e) for e in v] == rd][0]
-        raise Exception('Run "'+curname+'" with params '+str(rd)+' is in the output folder but not in the list of runs to do.')
+        if VERBOSE:
+            print('Warning! Run "'+curname+'" with params '+str(rd)+' is in the output folder but not in the list of runs to do.')
 
 
 print('#--------------------------------------------------------------------#')
@@ -105,17 +107,17 @@ currently_running = []
 
 for i,parameters in enumerate(product):
 
+    # Busy wait until there is a free slot
+    while len(currently_running) >= NUM_PARALLEL_RUNS:
+        for process in currently_running:
+            if process.poll() is not None:
+                currently_running.remove(process)
+        time.sleep(1)
+
     strparameters = [str(p) for p in parameters]
     if strparameters in runs_done:
         print('Run already done: '+str(strparameters) + '. Skipping...')
     else:
-
-        # Busy wait until there is a free slot
-        while len(currently_running) >= NUM_PARALLEL_RUNS:
-            for process in currently_running:
-                if process.poll() is not None:
-                    currently_running.remove(process)
-            time.sleep(1)
         
         assert len(currently_running) < NUM_PARALLEL_RUNS
 
