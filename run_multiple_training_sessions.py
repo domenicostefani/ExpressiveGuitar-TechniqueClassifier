@@ -78,31 +78,31 @@ print('#----------------------------#')
 print('# Parameter value ranges:    #')
 print('#----------------------------#')
 
-features_params = list(range(10,50,15)) + list(range(50,450,80))
+features_params = [150,300]
 print('Feature parameters:',features_params)
 
-net_depth_params = [2]
+net_depth_params = [4,6,8]
 print('Net depth parameters:',net_depth_params)
 
-net_width_params = [100,120,150]
+net_width_params = [200,400,600]
 print('Net width parameters:',net_width_params)
 
-dropout_rate_params = [0.15,0.3]
+dropout_rate_params = [0.2,0.5,0.7]
 print('Dropout rate parameters:',dropout_rate_params)
 
 learning_rate_params = [0.0001,0.001]
 print('Learning rate parameters:',learning_rate_params)
 
-batchsize_params = [8,16]
+batchsize_params = [1024]
 print('Batch size parameters:',batchsize_params)
 
-train_epochs_params = [30,50,70]
+train_epochs_params = [30,70,100,300]
 print('Train epochs parameters:',train_epochs_params)
 
 k_fold_parameters = [5]
 print('K-fold parameters:',k_fold_parameters)
 
-os_aggressiveness = [0,0.5,1.0]
+os_aggressiveness = [0.5,0.8]
 print('Oversampling aggressiveness parameters:',os_aggressiveness)
 
 parameter_lists = [features_params,net_depth_params,net_width_params,dropout_rate_params,learning_rate_params,batchsize_params,train_epochs_params,k_fold_parameters,os_aggressiveness]
