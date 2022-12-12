@@ -1,1 +1,1 @@
-echo Best Accuracy yet: $(ll output | grep -o -P c_accd.dddd | grep -o -P d.dddd | tail -1)
+echo Best Accuracy yet: $(ls -la output/ | grep -o -P "full_c_acc\d\.\d\d\d\d" | grep -o -P "\d\.\d\d\d\d" | tail -1)

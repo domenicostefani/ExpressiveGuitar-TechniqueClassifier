@@ -93,7 +93,7 @@ print('Dropout rate parameters:',dropout_rate_params)
 learning_rate_params = [0.0001,0.001]
 print('Learning rate parameters:',learning_rate_params)
 
-batchsize_params = [1024]
+batchsize_params = [64]
 print('Batch size parameters:',batchsize_params)
 
 train_epochs_params = [30,70,100,300]
@@ -102,7 +102,7 @@ print('Train epochs parameters:',train_epochs_params)
 k_fold_parameters = [5]
 print('K-fold parameters:',k_fold_parameters)
 
-os_aggressiveness = [0.5,0.8]
+os_aggressiveness = [0]
 print('Oversampling aggressiveness parameters:',os_aggressiveness)
 
 parameter_lists = [features_params,net_depth_params,net_width_params,dropout_rate_params,learning_rate_params,batchsize_params,train_epochs_params,k_fold_parameters,os_aggressiveness]
@@ -170,3 +170,5 @@ for i,parameters in enumerate(product):
         time.sleep(1)
         
     
+# Example command:
+# python3 expressive-technique-classifier-phase3.py -f 150 -d 4 -w 200 -dr 0.7 -lr 0.001 -bs 1024 -e 70 -k 5 -os -osagg 0   
