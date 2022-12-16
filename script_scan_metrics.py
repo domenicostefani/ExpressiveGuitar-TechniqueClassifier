@@ -5,7 +5,7 @@
 
 
 from glob import glob
-infofiles = glob('output/c_acc*/info.txt')
+infofiles = glob('output/*_acc*/info.txt')
 
 # print(infofiles[:5])
 
