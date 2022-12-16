@@ -18,7 +18,7 @@ NUM_PARALLEL_RUNS = 6 # Change this to the number of parallel runs you want to r
 
 start_from_run_index = START_FROM_RUN_NUMBER-1
 # print('Converting notebook to python script...')
-# os.system('/home/user/Develop/Domenico/timbre-classifier/convert_to_script.py')
+# os.system('/home/base-user/Develop/Domenico/timbre-classifier/convert_to_script.py')
 # print('Done.')
 
 
@@ -46,7 +46,7 @@ CACHE_UP_TO_DATE = False
 #                 splt[0]
 
 if not CACHE_UP_TO_DATE:
-    infofiles = glob(os.path.join(OUTPUT_DIR,'c_acc*','info.txt'))
+    infofiles = glob(os.path.join(OUTPUT_DIR,'*c_acc*','info.txt'))
     for fidx,iff in enumerate(infofiles):
         print('\b'*chars_to_delete,end='')
         strpr = '['+str(fidx+1)+'/'+str(len(infofiles))+']'
@@ -63,13 +63,16 @@ if not CACHE_UP_TO_DATE:
                 oif.readline()
                 commandline = oif.readline()
             assert 'expressive-technique-classifier-phase3.py -f ' in commandline
-            commandline = commandline.replace('expressive-technique-classifier-phase3.py -f ','').replace(' -d ',' ').replace(' -w ',' ').replace(' -dr ',' ').replace(' -lr ',' ').replace(' -bs ',' ').replace(' -e ',' ').replace(' -k ',' ')
+            commandline = commandline.replace('expressive-technique-classifier-phase3.py -f ','').replace(' -d ',' ').replace(' -w ',' ').replace(' -dr ',' ').replace(' -lr ',' ').replace(' -bs ',' ').replace(' -e ',' ').replace(' -k ',' ').replace(' -os ',' ').replace(' -osagg ',' ')
             runparams = commandline.strip().split(' ')
             runs_done.append(runparams)
             runs_done_dict[os.path.basename(os.path.dirname(iff))] = runparams
 
+        # print(runs_done_dict)
+
             #TODO: save to cache
 print() # Cause code before does not print endline
+
 
 
 print('Runs already in the output folder: '+str(len(runs_done)))
@@ -78,25 +81,25 @@ print('#----------------------------#')
 print('# Parameter value ranges:    #')
 print('#----------------------------#')
 
-features_params = [150,300]
+features_params = [150,250,300,350]
 print('Feature parameters:',features_params)
 
-net_depth_params = [4,6,8]
+net_depth_params = [1,2,4,8]
 print('Net depth parameters:',net_depth_params)
 
 net_width_params = [200,400,600]
 print('Net width parameters:',net_width_params)
 
-dropout_rate_params = [0.2,0.5,0.7]
+dropout_rate_params = [0.2,0.5]
 print('Dropout rate parameters:',dropout_rate_params)
 
 learning_rate_params = [0.0001,0.001]
 print('Learning rate parameters:',learning_rate_params)
 
-batchsize_params = [64]
+batchsize_params = [256]
 print('Batch size parameters:',batchsize_params)
 
-train_epochs_params = [30,70,100,300]
+train_epochs_params = [200,400,600]
 print('Train epochs parameters:',train_epochs_params)
 
 k_fold_parameters = [5]
@@ -153,7 +156,7 @@ for i,parameters in enumerate(product):
     if strparameters in runs_done:
         print('Run already done: '+str(strparameters) + '. Skipping...')
     else:
-        
+        print('Run with paremeters "'+str(strparameters)+'" is not done already, doing now...')
         assert len(currently_running) < NUM_PARALLEL_RUNS
 
         # Run the training session
