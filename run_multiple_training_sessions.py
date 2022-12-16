@@ -193,8 +193,7 @@ for i,parameters in enumerate(product):
                           os_aggr,
                           conv1d_layernum)
 
-        print(command)
-        exit(0)
+        print('\n'+command)
 
         with open(os.devnull, 'w') as outfile:
             process = subprocess.Popen(command.split(' '),stdout=outfile,stderr=outfile)
