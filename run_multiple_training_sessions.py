@@ -93,22 +93,22 @@ print('#----------------------------#')
 print('# Parameter value ranges:    #')
 print('#----------------------------#')
 
-features_params = [150,250,300,350]
+features_params = [150,250,350]
 print('Feature parameters:',features_params)
 
-net_depth_params = [1,2,4,8]
+net_depth_params = [1,2,4]
 print('Net depth parameters:',net_depth_params)
 
-net_width_params = [200,400,600]
+net_width_params = [200,400]
 print('Net width parameters:',net_width_params)
 
 dropout_rate_params = [0.2,0.5]
 print('Dropout rate parameters:',dropout_rate_params)
 
-learning_rate_params = [0.0001,0.001]
+learning_rate_params = [0.0001]
 print('Learning rate parameters:',learning_rate_params)
 
-batchsize_params = [256]
+batchsize_params = [1024]
 print('Batch size parameters:',batchsize_params)
 
 train_epochs_params = [200,400,600]
@@ -120,7 +120,7 @@ print('K-fold parameters:',k_fold_parameters)
 os_aggressiveness = [0]
 print('Oversampling aggressiveness parameters:',os_aggressiveness)
 
-conv1d_layers = [0,1,2,3]
+conv1d_layers = [0,1,2]
 print('Conv1D layers parameters:',conv1d_layers)
 
 parameter_lists = [features_params,net_depth_params,net_width_params,dropout_rate_params,learning_rate_params,batchsize_params,train_epochs_params,k_fold_parameters,os_aggressiveness,conv1d_layers]
