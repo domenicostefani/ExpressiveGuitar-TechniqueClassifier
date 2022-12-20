@@ -98,25 +98,25 @@ print('#----------------------------#')
 print('# Parameter value ranges:    #')
 print('#----------------------------#')
 
-features_params = [150,250,350]
+features_params = [450]
 print('Feature parameters:',features_params)
 
-net_depth_params = [1,2,4]
+net_depth_params = [0]
 print('Net depth parameters:',net_depth_params)
 
-net_width_params = [200,400]
+net_width_params = [32]
 print('Net width parameters:',net_width_params)
 
-dropout_rate_params = [0.2,0.5]
+dropout_rate_params = [0.2]
 print('Dropout rate parameters:',dropout_rate_params)
 
-learning_rate_params = [0.0001]
+learning_rate_params = [0.0003]
 print('Learning rate parameters:',learning_rate_params)
 
 batchsize_params = [1024]
 print('Batch size parameters:',batchsize_params)
 
-train_epochs_params = [200,400,600]
+train_epochs_params = [1000]
 print('Train epochs parameters:',train_epochs_params)
 
 k_fold_parameters = [5]
@@ -128,13 +128,13 @@ print('Oversampling aggressiveness parameters:',os_aggressiveness)
 conv1d_layers = [5]
 print('Conv1D layers parameters:',conv1d_layers)
 
-conv1d_kernel_sizes = ['8,8,8,8,8','16,16,16,16,16','32,32,32,32,32','8,16,32,64,128','128,64,32,16,8']
+conv1d_kernel_sizes = ['5,5,5,5,5','7,7,7,7,7','9,9,9,9,9']
 print('Conv1D kernel sizes parameters:',conv1d_kernel_sizes)
 
-conv1d_filters = ['8,8,8,8,8','16,16,16,16,16','32,32,32,32,32','8,16,32,64,128','128,64,32,16,8']
+conv1d_filters = ['8,8,8,8,8','32,32,32,32,32','8,16,32,64,128','128,64,32,16,8']
 print('Conv1D filters parameters:',conv1d_filters)
 
-conv1d_strides = ['1,1,1,1,1','2,2,2,2,2','4,4,4,4,4']
+conv1d_strides = ['1,1,1,1,1','2,2,2,2,2'   ,'4,4,4,4,4']
 print('Conv1D strides parameters:',conv1d_strides)
 
 conv1d_activations = ['relu,relu,relu,relu,relu','tanh,tanh,tanh,tanh,tanh','sigmoid,sigmoid,sigmoid,sigmoid,sigmoid']
@@ -206,7 +206,7 @@ for i,parameters in enumerate(product):
     if strparameters in runs_done:
         print('Run already done: '+str(strparameters) + '. Skipping...')
     else:
-        print('Run with paremeters "'+str(strparameters)+'" is not done already, doing now...')
+        print('Run with parameters "'+str(strparameters)+'" is not done already, doing now...')
         assert len(currently_running) < NUM_PARALLEL_RUNS
 
         # Run the training session
@@ -217,7 +217,7 @@ for i,parameters in enumerate(product):
                    conv1d_filters,\
                    conv1d_strides,\
                    conv1d_activations  = parameters
-        command = 'python3 expressive-technique-classifier-phase3.py -f {} -d {} -w {} -dr {} -lr {} -bs {} -e {} -k {} -os -osagg {} -c1d {} -ck {} -cs {} -cf {} -c1dact {}'\
+        command = 'python3 expressive-technique-classifier-phase3.py -f {} -d {} -w {} -dr {} -lr {} -bs {} -e {} -k {} -os -osagg {} -c1d {} -ck {} -cf {} -cs {} -c1dact {}'\
                   .format(features,\
                           net_depth,\
                           net_width,\
