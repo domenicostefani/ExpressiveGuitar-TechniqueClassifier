@@ -75,7 +75,12 @@ if not CACHE_UP_TO_DATE:
                                      .replace(' -k ',' ')\
                                      .replace(' -os ',' ')\
                                      .replace(' -osagg ',' ')\
-                                     .replace(' -c1d ',' ')
+                                     .replace(' -c1d ',' ')\
+                                     .replace(' -ck ',' ')\
+                                     .replace(' -cs ',' ')\
+                                     .replace(' -cf ',' ')\
+                                     .replace(' -c1dact ',' ')
+
             runparams = commandline.strip().split(' ')
             runs_done.append(runparams)
             runs_done_dict[os.path.basename(os.path.dirname(iff))] = runparams
@@ -120,14 +125,41 @@ print('K-fold parameters:',k_fold_parameters)
 os_aggressiveness = [0]
 print('Oversampling aggressiveness parameters:',os_aggressiveness)
 
-conv1d_layers = [0,1,2]
+conv1d_layers = [5]
 print('Conv1D layers parameters:',conv1d_layers)
 
-parameter_lists = [features_params,net_depth_params,net_width_params,dropout_rate_params,learning_rate_params,batchsize_params,train_epochs_params,k_fold_parameters,os_aggressiveness,conv1d_layers]
+conv1d_kernel_sizes = ['8,8,8,8,8','16,16,16,16,16','32,32,32,32,32','8,16,32,64,128','128,64,32,16,8']
+print('Conv1D kernel sizes parameters:',conv1d_kernel_sizes)
+
+conv1d_filters = ['8,8,8,8,8','16,16,16,16,16','32,32,32,32,32','8,16,32,64,128','128,64,32,16,8']
+print('Conv1D filters parameters:',conv1d_filters)
+
+conv1d_strides = ['1,1,1,1,1','2,2,2,2,2','4,4,4,4,4']
+print('Conv1D strides parameters:',conv1d_strides)
+
+conv1d_activations = ['relu,relu,relu,relu,relu','tanh,tanh,tanh,tanh,tanh','sigmoid,sigmoid,sigmoid,sigmoid,sigmoid']
+print('Conv1D activations parameters:',conv1d_activations)
+
+
+parameter_lists = [features_params,
+                   net_depth_params,
+                   net_width_params,
+                   dropout_rate_params,
+                   learning_rate_params,
+                   batchsize_params,
+                   train_epochs_params,
+                   k_fold_parameters,
+                   os_aggressiveness,
+                   conv1d_layers,
+                   conv1d_kernel_sizes,
+                   conv1d_filters,
+                   conv1d_strides,
+                   conv1d_activations]
 expected_length = len(features_params)*len(net_depth_params)*len(net_width_params)*\
                   len(dropout_rate_params)*len(learning_rate_params)*len(batchsize_params)*\
                   len(train_epochs_params)*len(k_fold_parameters)*len(os_aggressiveness)*\
-                  len(conv1d_layers)
+                  len(conv1d_layers)*len(conv1d_kernel_sizes)*len(conv1d_filters)*\
+                    len(conv1d_strides)*len(conv1d_activations)
 
 # Compute the product of all the parameter values
 import itertools
@@ -180,8 +212,12 @@ for i,parameters in enumerate(product):
         # Run the training session
         print('Run',i+1+start_from_run_index,'of',len(product)+start_from_run_index)
         print('Parameters:',parameters)
-        features,net_depth,net_width,dropout_rate,learning_rate,batchsize,train_epochs,k_fold,os_aggr,conv1d_layernum = parameters
-        command = 'python3 expressive-technique-classifier-phase3.py -f {} -d {} -w {} -dr {} -lr {} -bs {} -e {} -k {} -os -osagg {} -c1d {}'\
+        features,net_depth,net_width,dropout_rate,learning_rate,batchsize,train_epochs,k_fold,os_aggr,conv1d_layernum,\
+                   conv1d_kernel_sizes,\
+                   conv1d_filters,\
+                   conv1d_strides,\
+                   conv1d_activations  = parameters
+        command = 'python3 expressive-technique-classifier-phase3.py -f {} -d {} -w {} -dr {} -lr {} -bs {} -e {} -k {} -os -osagg {} -c1d {} -ck {} -cs {} -cf {} -c1dact {}'\
                   .format(features,\
                           net_depth,\
                           net_width,\
@@ -190,8 +226,12 @@ for i,parameters in enumerate(product):
                           batchsize,\
                           train_epochs,\
                           k_fold,\
-                          os_aggr,
-                          conv1d_layernum)
+                          os_aggr,\
+                          conv1d_layernum,\
+                          conv1d_kernel_sizes,\
+                          conv1d_filters,\
+                          conv1d_strides,\
+                          conv1d_activations)
 
         print('\n'+command)
 
