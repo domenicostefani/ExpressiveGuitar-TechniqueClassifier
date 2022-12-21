@@ -1,5 +1,6 @@
 *.csv
 *.pickle
+analysis/*.png
 /expressive-technique-classifier-phase3.py
 output
 old-output
