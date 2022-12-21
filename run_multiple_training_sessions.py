@@ -98,7 +98,7 @@ print('#----------------------------#')
 print('# Parameter value ranges:    #')
 print('#----------------------------#')
 
-features_params = [450]
+features_params = [450,200]
 print('Feature parameters:',features_params)
 
 net_depth_params = [0]
@@ -122,7 +122,7 @@ print('Train epochs parameters:',train_epochs_params)
 k_fold_parameters = [5]
 print('K-fold parameters:',k_fold_parameters)
 
-os_aggressiveness = [0]
+os_aggressiveness = [0,1.0]
 print('Oversampling aggressiveness parameters:',os_aggressiveness)
 
 conv1d_layers = [5]
@@ -137,7 +137,7 @@ print('Conv1D filters parameters:',conv1d_filters)
 conv1d_strides = ['1,1,1,1,1','2,2,2,2,2'   ,'4,4,4,4,4']
 print('Conv1D strides parameters:',conv1d_strides)
 
-conv1d_activations = ['relu,relu,relu,relu,relu','tanh,tanh,tanh,tanh,tanh','sigmoid,sigmoid,sigmoid,sigmoid,sigmoid']
+conv1d_activations = ['relu,relu,relu,relu,relu','tanh,tanh,tanh,tanh,tanh','sigmoid,sigmoid,sigmoid,sigmoid,sigmoid','relu,relu,relu,relu,none']
 print('Conv1D activations parameters:',conv1d_activations)
 
 
@@ -234,7 +234,7 @@ for i,parameters in enumerate(product):
                           conv1d_activations)
 
         print('\n'+command)
-
+        # break
         with open(os.devnull, 'w') as outfile:
             process = subprocess.Popen(command.split(' '),stdout=outfile,stderr=outfile)
             currently_running.append(process)
