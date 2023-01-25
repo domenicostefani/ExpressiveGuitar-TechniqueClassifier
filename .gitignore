@@ -1,3 +1,4 @@
+/last_metrics.txt
 *.csv
 *.pickle
 analysis/*.png
