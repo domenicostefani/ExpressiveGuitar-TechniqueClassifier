@@ -1,16 +1,110 @@
 #!/usr/bin/env python3
+DEBUG_MODE = True
+# print big title that says 'RUN MULTIPLE'
+print('''
 
-print('Running multiple training sessions...')
+██████╗ ██╗   ██╗███╗   ██╗    ███╗   ███╗██╗   ██╗██╗  ████████╗██╗██████╗ ██╗     ███████╗
+██╔══██╗██║   ██║████╗  ██║    ████╗ ████║██║   ██║██║  ╚══██╔══╝██║██╔══██╗██║     ██╔════╝
+██████╔╝██║   ██║██╔██╗ ██║    ██╔████╔██║██║   ██║██║     ██║   ██║██████╔╝██║     █████╗  
+██╔══██╗██║   ██║██║╚██╗██║    ██║╚██╔╝██║██║   ██║██║     ██║   ██║██╔═══╝ ██║     ██╔══╝  
+██║  ██║╚██████╔╝██║ ╚████║    ██║ ╚═╝ ██║╚██████╔╝███████╗██║   ██║██║     ███████╗███████╗
+╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═══╝    ╚═╝     ╚═╝ ╚═════╝ ╚══════╝╚═╝   ╚═╝╚═╝     ╚══════╝╚══════╝ v2.0
+''')
+
+
+# MODES TO VERIFY
+problem = 'classification_task = ClassificationTask.FULL_8_CLASS_PROBLEM'
+fsize =   'FEATURE_WINDOW_SIZE = FeatureWindowSize._704windowed'
+wm =      'WINDOWED_INPUT_MODE = WindowedInputMode._2D'
+
+notebook = './expressive-technique-classifier-phase3.ipynb'
+script = './expressive-technique-classifier-phase3.py'
+backup_script = 'backup_'+script
+
+convert_script_path = './convert_to_script.py'
+
+VERBOSE = True
+
+
+
+
+
+
+
 
 import os
 import time
 import subprocess
 from glob import glob
 import shutil
+import numpy as np
+import itertools
+import re
 
-VERBOSE = True
+this_folder = os.path.dirname(os.path.realpath(__file__))
 
-OUTPUT_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'output')
+# Check that notebook and script exist
+assert os.path.exists(os.path.relpath(os.path.join(this_folder,notebook))), 'Notebook '+notebook+' not found'
+assert os.path.exists(os.path.relpath(os.path.join(this_folder,script))), 'Script '+script+' not found'
+
+# Check that notebook is not newer than script
+notebook_time = os.path.getmtime(notebook)
+script_time = os.path.getmtime(script)
+if (notebook_time > script_time):
+    print('Training Notebook is newer than script. Converting notebook to script...')
+    os.system(convert_script_path)
+    print('Done.')
+    print('Restart this script manually')
+    exit()
+print('Training script is up to date. Continuing...')
+
+found_classproblem_enum = False
+# Check that script is configured as expected, i.e. that it is configured to run the 8-class problem, with 704 window size and 2D windowed input mode
+found = {problem:False, fsize:False, wm:False}
+with open(script) as f:
+    lines = f.readlines()
+    for l in lines:
+        if problem == l.strip():
+            found[problem] = True
+        elif fsize == l.strip():
+            found[fsize] = True
+        elif wm == l.strip():
+            found[wm] = True
+
+        # Also check that this run_multiple script is not out of date
+        if "FULL_8_CLASS_PROBLEM,BINARY_PERCUSSIVE_PITCHED,PERCUSSIVE_4_ONLY,PITCHED_4_ONLY,PERCUSSIVE_PLUS_PITCHED_CLASS,ONE_GUITARIST_FULL = ((1,'full'), (2,'binary'), (3,'perc'), (4,'pitch'), (5,'perc+pitch'), (6,'one-guit-full'))" in l:
+            found_classproblem_enum = True
+
+for line in found:
+    assert found[line], '!The notebook is not configured as expected (Line "'+line+'" not found in script '+script+')'
+assert found_classproblem_enum, 'The enum used in this very script is not up to date with the training notebook or script. Please update it IN THIS RUN_MULTIPLE SCRIPT.'
+
+
+
+base_output_folder = os.path.join(this_folder,'output')
+
+assert len(re.findall(r'FEATURE_WINDOW_SIZE[ ]*=[ ]*FeatureWindowSize\.', fsize)) == 1, '"fsize" does not match pattern'
+window_folder = re.findall(r'FEATURE_WINDOW_SIZE[ ]*=[ ]*FeatureWindowSize\.(.*)', fsize)[0] # take text that comes after the regex r'FEATURE_WINDOW_SIZE[ ]*=[ ]*FeatureWindowSize\.'
+
+#problem = 'classification_task = ClassificationTask.FULL_8_CLASS_PROBLEM'
+assert len(re.findall(r'classification_task[ ]*=[ ]*ClassificationTask\.', problem)) == 1, '"problem" does not match pattern'
+problem_enum = re.findall(r'classification_task[ ]*=[ ]*ClassificationTask\.(.*)', problem)[0]
+
+converss = {'FULL_8_CLASS_PROBLEM' : 'full', 'BINARY_PERCUSSIVE_PITCHED' : 'binary', 'PERCUSSIVE_4_ONLY' : 'perc', 'PITCHED_4_ONLY' : 'pitch', 'PERCUSSIVE_PLUS_PITCHED_CLASS' : 'perc+pitch', 'ONE_GUITARIST_FULL' : 'one-guit-full'}
+assert problem_enum in converss, 'problem_enum not found in converss'
+problem_folder = converss[problem_enum]
+
+full_run_folder = os.path.join(base_output_folder, window_folder, problem_folder)
+# print('full_run_folder: '+full_run_folder)
+
+if not os.path.exists(full_run_folder):
+    print('WARNING: output folder '+full_run_folder+' does not exist. Are you sure that this is OK?')
+    print('Press ENTER to continue or CTRL+C to exit')
+    input()
+
+
+
+OUTPUT_DIR = full_run_folder
 
 START_FROM_RUN_NUMBER = 1 # Change this to the run number you want to start from !!! WARNING !!! 1-based indexing
 NUM_PARALLEL_RUNS = 6 # Change this to the number of parallel runs you want to run
@@ -28,6 +122,25 @@ runs_done_dict = {}
 print('Check training sessions already done')
 
 chars_to_delete = 0
+
+
+parameter_names = {}
+parameter_names['features'] = '-f'
+parameter_names['net-depth'] = '-d'
+parameter_names['net-width'] = '-w'
+parameter_names['dropout'] = '-dr'
+parameter_names['learning-rate'] = '-lr'
+parameter_names['batchsize'] = '-bs'
+parameter_names['epochs'] = '-e'
+parameter_names['k-folds'] = '-k'
+parameter_names['oversampling-aggressiveness'] = '-osagg'
+parameter_names['conv'] = '-c1d'
+parameter_names['conv-kernels'] = '-ck'
+parameter_names['conv-strides'] = '-cs'
+parameter_names['conv-filters'] = '-cf'
+parameter_names['conv-activations'] = '-c1dact'
+parameter_names['conv-padding'] = '-cp'
+parameter_names['pool-layers'] = '-pl'
 
 
 RUNS_DONE_CACHEFILE = os.path.join(OUTPUT_DIR, 'runs_done.txt') # Files with the parameters of the runs already done
@@ -53,42 +166,75 @@ if not CACHE_UP_TO_DATE:
         print(strpr,end='',flush = True)
         chars_to_delete = len(strpr)
                 
-        if not os.path.exists(os.path.join(os.path.dirname(iff),'finalModel')) or\
-            not os.path.exists(os.path.join(os.path.dirname(iff),'backup_expressive-technique-classifier-phase3.py')):
-            print('Moving '+os.path.dirname(iff) + ' to trash')
-            if not os.path.exists(os.path.join(OUTPUT_DIR,'trash')):
-                os.mkdir(os.path.join(OUTPUT_DIR,'trash'))
-            shutil.move(os.path.dirname(iff),os.path.join(OUTPUT_DIR,'trash'))
-        else:
-            commandline = ''
-            with open(iff) as oif:
-                oif.readline()
-                commandline = oif.readline()
-            assert 'expressive-technique-classifier-phase3.py -f ' in commandline
-            commandline = commandline.replace('expressive-technique-classifier-phase3.py -f ','')\
-                                     .replace(' -d ',' ')\
-                                     .replace(' -w ',' ')\
-                                     .replace(' -dr ',' ')\
-                                     .replace(' -lr ',' ')\
-                                     .replace(' -bs ',' ')\
-                                     .replace(' -e ',' ')\
-                                     .replace(' -k ',' ')\
-                                     .replace(' -os ',' ')\
-                                     .replace(' -osagg ',' ')\
-                                     .replace(' -c1d ',' ')\
-                                     .replace(' -ck ',' ')\
-                                     .replace(' -cs ',' ')\
-                                     .replace(' -cf ',' ')\
-                                     .replace(' -c1dact ',' ')
+        # if not os.path.exists(os.path.join(os.path.dirname(iff),'finalModel')) or\
+        #     not os.path.exists(os.path.join(os.path.dirname(iff), backup_script)):
+        #     # print('Moving '+os.path.dirname(iff) + ' to trash')
+        #     # if not os.path.exists(os.path.join(OUTPUT_DIR,'trash')):
+        #     #     os.mkdir(os.path.join(OUTPUT_DIR,'trash'))
+        #     # shutil.move(os.path.dirname(iff),os.path.join(OUTPUT_DIR,'trash'))
+        #     pass
+        # else:
 
-            runparams = commandline.strip().split(' ')
-            runs_done.append(runparams)
-            runs_done_dict[os.path.basename(os.path.dirname(iff))] = runparams
+
+        commandline = ''
+        with open(iff) as oif:
+            oif.readline()
+            commandline = oif.readline().strip()
+
+        if commandline == '':
+            # print('WARNING: commandline empty in file '+iff)
+            continue
+        # assert script+' -f ' in commandline
+        
+
+        # get script name from commandline
+        scriptstr = re.findall(r'([^ ]*\.py)',commandline)[0]
+        assert scriptstr == script, 'script name in commandline does not match script name in scriptstr'
+
+        #remove everythin up to script name end in commandline
+        commandline = commandline[commandline.find(scriptstr)+len(scriptstr):]
+
+        def extract_argument_value(commandline, argument):
+            if argument in commandline:
+                cstart = commandline.find(string_to_find)+len(string_to_find)
+                cend = commandline.find(' ',cstart)
+                cend = len(commandline) if cend == -1 else cend
+                return commandline[cstart:cend].strip()
+            else:
+                assert False, 'argument not found in commandline'
+                return None
+
+        thisruns_parameters = {}
+        for p in parameter_names:
+            string_to_find = ' --'+p+' '
+            if string_to_find in commandline:
+                argument_value = extract_argument_value(commandline, string_to_find)
+                commandline = commandline.replace(re.findall(string_to_find+'[ ]*'+argument_value,commandline)[0],'')
+                thisruns_parameters[p] = argument_value
+        
+        for longp, shortp in parameter_names.items():
+            string_to_find = ' '+shortp+' '
+            if string_to_find in commandline:
+                argument_value = extract_argument_value(commandline, string_to_find)
+                commandline = commandline.replace(re.findall(string_to_find+'[ ]*'+argument_value,commandline)[0],'')
+                thisruns_parameters[longp] = argument_value
+
+        if commandline.strip() != '':
+            print('Warning, a run contains additional parameters that are not deal with in this script: "'+commandline+'"')
+            print('Do you wish to proceed anyway? Press enter to continue, or ctrl+c to exit')
+            input()
+
+
+        runs_done.append(thisruns_parameters)
+        runs_done_dict[os.path.basename(os.path.dirname(iff))] = thisruns_parameters
 
         # print(runs_done_dict)
 
             #TODO: save to cache
-print() # Cause code before does not print endline
+print(' Done.') # Cause code before does not print endline
+
+# print('runs_done_dict:'+str(runs_done_dict))
+
 
 
 
@@ -98,74 +244,40 @@ print('#----------------------------#')
 print('# Parameter value ranges:    #')
 print('#----------------------------#')
 
-features_params = [450,200]
-print('Feature parameters:',features_params)
+parameter_values = {
+    'features'                      : [450,200,'all'],                      
+    'net-depth'                     : [0],
+    'net-width'                     : [1],
+    'dropout'                       : [0.0],
+    'learning-rate'                 : [0.001],
+    'batchsize'                     : [1024],
+    'epochs'                        : [100,1000,10],
+    'k-folds'                       : [5],
+    'oversampling-aggressiveness'   : [0.0,1.0],
+    'conv'                          : [1],
+    'conv-kernels'                  : ['3'],
+    'conv-strides'                  : ['1'],
+    'conv-filters'                  : ['2'],
+    'conv-activations'              : ['relu'],
+    'conv-padding'                  : ['same'],
+    'pool-layers'                   : ['M'],
+}
 
-net_depth_params = [0]
-print('Net depth parameters:',net_depth_params)
-
-net_width_params = [32]
-print('Net width parameters:',net_width_params)
-
-dropout_rate_params = [0.2]
-print('Dropout rate parameters:',dropout_rate_params)
-
-learning_rate_params = [0.0003]
-print('Learning rate parameters:',learning_rate_params)
-
-batchsize_params = [1024]
-print('Batch size parameters:',batchsize_params)
-
-train_epochs_params = [100,1000]
-print('Train epochs parameters:',train_epochs_params)
-
-k_fold_parameters = [5]
-print('K-fold parameters:',k_fold_parameters)
-
-os_aggressiveness = [0,1.0]
-print('Oversampling aggressiveness parameters:',os_aggressiveness)
-
-conv1d_layers = [4]
-print('Conv1D layers parameters:',conv1d_layers)
-
-conv1d_kernel_sizes = ['5,5,5,5','7,7,7,7','9,9,9,9']
-print('Conv1D kernel sizes parameters:',conv1d_kernel_sizes)
-
-conv1d_filters = ['8,8,8,8','32,32,32,32','16,32,64,128','64,32,16,8']
-print('Conv1D filters parameters:',conv1d_filters)
-
-conv1d_strides = ['1,1,1,1','2,2,2,2','4,4,4,4']
-print('Conv1D strides parameters:',conv1d_strides)
-
-conv1d_activations = ['relu,relu,relu,relu','tanh,tanh,tanh,tanh','sigmoid,sigmoid,sigmoid,sigmoid','relu,relu,relu,relu,none']
-print('Conv1D activations parameters:',conv1d_activations)
+for p in parameter_names:
+    assert p in parameter_values, 'Value ranges are not specified for parameter '+p+'.'
 
 
-parameter_lists = [features_params,
-                   net_depth_params,
-                   net_width_params,
-                   dropout_rate_params,
-                   learning_rate_params,
-                   batchsize_params,
-                   train_epochs_params,
-                   k_fold_parameters,
-                   os_aggressiveness,
-                   conv1d_layers,
-                   conv1d_kernel_sizes,
-                   conv1d_filters,
-                   conv1d_strides,
-                   conv1d_activations]
-expected_length = len(features_params)*len(net_depth_params)*len(net_width_params)*\
-                  len(dropout_rate_params)*len(learning_rate_params)*len(batchsize_params)*\
-                  len(train_epochs_params)*len(k_fold_parameters)*len(os_aggressiveness)*\
-                  len(conv1d_layers)*len(conv1d_kernel_sizes)*len(conv1d_filters)*\
-                    len(conv1d_strides)*len(conv1d_activations)
+
+
+
+print(''.join([str(p)+': '+str(parameter_values[p])+'\n' for p in parameter_values]))
+
+parameter_lists = [parameter_values[p] for p in parameter_values]
 
 # Compute the product of all the parameter values
-import itertools
 product = list(itertools.product(*parameter_lists))
-assert len(product) == expected_length
-
+expected_length = np.prod([len(parameter_values[p]) for p in parameter_values])
+assert len(product) == expected_length, 'Expected length: '+str(expected_length)+', actual length: '+str(len(product))
 
 
 # for strparameters in strproduct:
@@ -180,20 +292,53 @@ assert len(product) == expected_length
         # if VERBOSE:
         #     print('Warning! Run "'+curname+'" with params '+str(rd)+' is in the output folder but not in the list of runs to do.')
 
-
 print('#--------------------------------------------------------------------#')
 print('# Number of combined runs:',len(product))
 print('#')
-print('# Starting from run No.',start_from_run_index+1)
-print('# Which leaves '+str(len(product)-start_from_run_index)+' training runs to execute.')
+
+
+
+
+
+
+origlen = len(product)
+product = product[start_from_run_index:]
+
+already_done = 0
+
+todl = []
+
+for i,pd in enumerate(product):
+    assert len(pd) == len(parameter_values), 'Expected length: '+str(len(parameter_values))+', actual length: '+str(len(pd))
+    assert len(list(parameter_values.keys())) == len(pd)
+    cur_params = dict(zip(parameter_values.keys(),pd))
+
+    cur_params_str = {k:str(v) for k,v in cur_params.items()}
+
+    if cur_params_str in runs_done:
+        print('Run already done: '+str(cur_params) + '. Skipping...')
+        already_done += 1
+    else:
+        # print('Run not done: '+str(cur_params) + '. Adding to list of runs to do.')
+        # TODO: fix this big mess
+        todl.append(cur_params)
+
+
+print('# Starting from run %d / %d'%(start_from_run_index+1,origlen))
+print('# Runs already done: '+str(already_done))
+print('# Which leaves '+str(len(todl))+' training runs to execute.')
 print('#--------------------------------------------------------------------#')
 
-product = product[start_from_run_index:]
+
+
 
 # Run the training sessions
 currently_running = []
 
-for i,parameters in enumerate(product):
+for i,pd in enumerate(product):
+    assert len(pd) == len(parameter_values), 'Expected length: '+str(len(parameter_values))+', actual length: '+str(len(pd))
+    assert len(list(parameter_values.keys())) == len(pd)
+    cur_params = dict(zip(parameter_values.keys(),pd))
 
     # Busy wait until there is a free slot
     while len(currently_running) >= NUM_PARALLEL_RUNS:
@@ -202,39 +347,26 @@ for i,parameters in enumerate(product):
                 currently_running.remove(process)
         time.sleep(1)
 
-    strparameters = [str(p) for p in parameters]
-    if strparameters in runs_done:
-        print('Run already done: '+str(strparameters) + '. Skipping...')
+    strparameters = [str(p) for p in parameter_names]
+
+    print('\nRun',i+1+start_from_run_index,'of',len(product)+start_from_run_index)
+    print('-> parameters "'+str([cur_params[e] for e in cur_params])+'"\n--> not done already, doing now...')
+
+    
+    assert len(currently_running) < NUM_PARALLEL_RUNS
+
+    # Run the training session
+    # print('Parameters:',parameter_names)
+
+    command = 'python3 '+script+' '
+    for p in parameter_names:
+        assert p in cur_params, 'Parameter "'+p+'" not in cur_params: '+str(cur_params)
+        command += '--'+p+' '+str(cur_params[p])+' '
+
+    if DEBUG_MODE:
+        print(command + '\n\n')
+        time.sleep(5)
     else:
-        print('Run with parameters "'+str(strparameters)+'" is not done already, doing now...')
-        assert len(currently_running) < NUM_PARALLEL_RUNS
-
-        # Run the training session
-        print('Run',i+1+start_from_run_index,'of',len(product)+start_from_run_index)
-        print('Parameters:',parameters)
-        features,net_depth,net_width,dropout_rate,learning_rate,batchsize,train_epochs,k_fold,os_aggr,conv1d_layernum,\
-                   conv1d_kernel_sizes,\
-                   conv1d_filters,\
-                   conv1d_strides,\
-                   conv1d_activations  = parameters
-        command = 'python3 expressive-technique-classifier-phase3.py -f {} -d {} -w {} -dr {} -lr {} -bs {} -e {} -k {} -os -osagg {} -c1d {} -ck {} -cf {} -cs {} -c1dact {}'\
-                  .format(features,\
-                          net_depth,\
-                          net_width,\
-                          dropout_rate,\
-                          learning_rate,\
-                          batchsize,\
-                          train_epochs,\
-                          k_fold,\
-                          os_aggr,\
-                          conv1d_layernum,\
-                          conv1d_kernel_sizes,\
-                          conv1d_filters,\
-                          conv1d_strides,\
-                          conv1d_activations)
-
-        print('\n'+command)
-        # break
         with open(os.devnull, 'w') as outfile:
             process = subprocess.Popen(command.split(' '),stdout=outfile,stderr=outfile)
             currently_running.append(process)
