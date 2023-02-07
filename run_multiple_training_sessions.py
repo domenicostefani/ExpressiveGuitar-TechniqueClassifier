@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
-DEBUG_MODE = False
-# print big title that says 'RUN MULTIPLE'
-print('''
 
+print('''
 ██████╗ ██╗   ██╗███╗   ██╗    ███╗   ███╗██╗   ██╗██╗  ████████╗██╗██████╗ ██╗     ███████╗
 ██╔══██╗██║   ██║████╗  ██║    ████╗ ████║██║   ██║██║  ╚══██╔══╝██║██╔══██╗██║     ██╔════╝
 ██████╔╝██║   ██║██╔██╗ ██║    ██╔████╔██║██║   ██║██║     ██║   ██║██████╔╝██║     █████╗  
@@ -10,6 +8,36 @@ print('''
 ██║  ██║╚██████╔╝██║ ╚████║    ██║ ╚═╝ ██║╚██████╔╝███████╗██║   ██║██║     ███████╗███████╗
 ╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═══╝    ╚═╝     ╚═╝ ╚═════╝ ╚══════╝╚═╝   ╚═╝╚═╝     ╚══════╝╚══════╝ v2.0
 ''')
+
+DEBUG_MODE = False
+NUM_PARALLEL_RUNS = 6 # Change this to the number of parallel runs you want to run
+SAVE_COMMANDLINE_OUTPUT = True
+
+parameter_values = {
+    'features'                      : [200,100,'all'],                      
+    'net-depth'                     : [0,1,2,4],
+    'net-width'                     : [16,32,100,200],
+    'dropout'                       : [0.5],
+    'learning-rate'                 : [0.00005,0.00001],
+    'batchsize'                     : [64,128],
+    'epochs'                        : [200,600],
+    'k-folds'                       : [5],
+    'oversampling-aggressiveness'   : [1.0],
+    'conv'                          : [1],
+    'conv-kernels'                  : ['3','5'],
+    'conv-strides'                  : ['2','1'],
+    'conv-filters'                  : ['8','32','128'],
+    'conv-activations'              : ['relu'],
+    'conv-padding'                  : ['same'],
+    'pool-layers'                   : ['M','A'],
+}
+
+
+
+
+
+
+
 
 
 # MODES TO VERIFY
@@ -107,7 +135,6 @@ if not os.path.exists(full_run_folder):
 OUTPUT_DIR = full_run_folder
 
 START_FROM_RUN_NUMBER = 1 # Change this to the run number you want to start from !!! WARNING !!! 1-based indexing
-NUM_PARALLEL_RUNS = 6 # Change this to the number of parallel runs you want to run
 
 
 start_from_run_index = START_FROM_RUN_NUMBER-1
@@ -141,6 +168,13 @@ parameter_names['conv-filters'] = '-cf'
 parameter_names['conv-activations'] = '-c1dact'
 parameter_names['conv-padding'] = '-cp'
 parameter_names['pool-layers'] = '-pl'
+
+print('#----------------------------#')
+print('# Parameter value ranges:    #')
+print('#----------------------------#')
+
+for p in parameter_names:
+    assert p in parameter_values, 'Value ranges are not specified for parameter '+p+'.'
 
 
 RUNS_DONE_CACHEFILE = os.path.join(OUTPUT_DIR, 'runs_done.txt') # Files with the parameters of the runs already done
@@ -240,31 +274,7 @@ print(' Done.') # Cause code before does not print endline
 
 print('Runs already in the output folder: '+str(len(runs_done)))
 
-print('#----------------------------#')
-print('# Parameter value ranges:    #')
-print('#----------------------------#')
 
-parameter_values = {
-    'features'                      : [200,100,'all'],                      
-    'net-depth'                     : [0,1,2,4],
-    'net-width'                     : [16,32,100.200],
-    'dropout'                       : [0.5,0.2],
-    'learning-rate'                 : [0.0001,0.00005,0.00001],
-    'batchsize'                     : [32,64,128],
-    'epochs'                        : [100,200,600],
-    'k-folds'                       : [5],
-    'oversampling-aggressiveness'   : [0.5,1.0],
-    'conv'                          : [1],
-    'conv-kernels'                  : ['3','5'],
-    'conv-strides'                  : ['2','1'],
-    'conv-filters'                  : ['2','8','16','32','128'],
-    'conv-activations'              : ['relu'],
-    'conv-padding'                  : ['same'],
-    'pool-layers'                   : ['M','A'],
-}
-
-for p in parameter_names:
-    assert p in parameter_values, 'Value ranges are not specified for parameter '+p+'.'
 
 
 
@@ -335,6 +345,19 @@ print('#--------------------------------------------------------------------#')
 # Run the training sessions
 currently_running = []
 
+
+if SAVE_COMMANDLINE_OUTPUT:
+    commandlineoutfolder = os.path.join(this_folder,'commandline_outputs')
+    if not os.path.exists(commandlineoutfolder):
+        os.makedirs(commandlineoutfolder)
+    #Check if empty and ask to clean 
+    if len(os.listdir(commandlineoutfolder)) > 0:
+        print('Warning! The folder "'+commandlineoutfolder+'" is not empty. If you continue, the contents will be deleted.')
+        print('Do you wish to proceed anyway? Press enter to continue, or ctrl+c to exit')
+        input()
+        for f in os.listdir(commandlineoutfolder):
+            os.remove(os.path.join(commandlineoutfolder,f))
+
 for i,pd in enumerate(product):
     assert len(pd) == len(parameter_values), 'Expected length: '+str(len(parameter_values))+', actual length: '+str(len(pd))
     assert len(list(parameter_values.keys())) == len(pd)
@@ -358,21 +381,32 @@ for i,pd in enumerate(product):
     # Run the training session
     # print('Parameters:',parameter_names)
 
+    # command = 'conda activate tensorflow && '
     command = 'python3 '+script+' '
     for p in parameter_names:
         assert p in cur_params, 'Parameter "'+p+'" not in cur_params: '+str(cur_params)
         command += '--'+p+' '+str(cur_params[p])+' '
+    
+    command = command.strip()
 
     if DEBUG_MODE:
         print(command + '\n\n')
         time.sleep(5)
     else:
-        with open(os.devnull, 'w') as outfile:
-            process = subprocess.Popen(command.split(' '),stdout=outfile,stderr=outfile)
+        if SAVE_COMMANDLINE_OUTPUT:
+            outfile_stdout = os.path.join(commandlineoutfolder,str(i+1+start_from_run_index)+'_out.txt')
+            outfile_stderr = os.path.join(commandlineoutfolder,str(i+1+start_from_run_index)+'_err.txt')
+            with open(os.path.join(commandlineoutfolder,str(i+1+start_from_run_index)+'_command.txt'),'w') as f:
+                f.write(command)
+        else:
+            outfile_stdout = os.devnull
+            outfile_stderr = os.devnull
+
+        with open(outfile_stdout, 'w') as outfile, open(outfile_stderr, 'w') as errfile:
+            process = subprocess.Popen(command.split(' '),stdout=outfile,stderr=errfile)
+            print("the commandline is {}".format(process.args))
             currently_running.append(process)
         print(command + '\n\n')
         time.sleep(1)
-        
+
     
-# Example command:
-# python3 expressive-technique-classifier-phase3.py -f 150 -d 4 -w 200 -dr 0.7 -lr 0.001 -bs 1024 -e 70 -k 5 -os -osagg 0   
