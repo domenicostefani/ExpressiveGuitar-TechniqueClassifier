@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-DEBUG_MODE = True
+DEBUG_MODE = False
 # print big title that says 'RUN MULTIPLE'
 print('''
 
@@ -245,22 +245,22 @@ print('# Parameter value ranges:    #')
 print('#----------------------------#')
 
 parameter_values = {
-    'features'                      : [450,200,'all'],                      
-    'net-depth'                     : [0],
-    'net-width'                     : [1],
-    'dropout'                       : [0.0],
-    'learning-rate'                 : [0.001],
-    'batchsize'                     : [1024],
-    'epochs'                        : [100,1000,10],
+    'features'                      : [200,100,'all'],                      
+    'net-depth'                     : [0,1,2,4],
+    'net-width'                     : [16,32,100.200],
+    'dropout'                       : [0.5,0.2],
+    'learning-rate'                 : [0.0001,0.00005,0.00001],
+    'batchsize'                     : [32,64,128],
+    'epochs'                        : [100,200,600],
     'k-folds'                       : [5],
-    'oversampling-aggressiveness'   : [0.0,1.0],
+    'oversampling-aggressiveness'   : [0.5,1.0],
     'conv'                          : [1],
-    'conv-kernels'                  : ['3'],
-    'conv-strides'                  : ['1'],
-    'conv-filters'                  : ['2'],
+    'conv-kernels'                  : ['3','5'],
+    'conv-strides'                  : ['2','1'],
+    'conv-filters'                  : ['2','8','16','32','128'],
     'conv-activations'              : ['relu'],
     'conv-padding'                  : ['same'],
-    'pool-layers'                   : ['M'],
+    'pool-layers'                   : ['M','A'],
 }
 
 for p in parameter_names:
@@ -370,6 +370,7 @@ for i,pd in enumerate(product):
         with open(os.devnull, 'w') as outfile:
             process = subprocess.Popen(command.split(' '),stdout=outfile,stderr=outfile)
             currently_running.append(process)
+        print(command + '\n\n')
         time.sleep(1)
         
     
