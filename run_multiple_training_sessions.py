@@ -10,16 +10,17 @@ print('''
 ''')
 
 DEBUG_MODE = False
-NUM_PARALLEL_RUNS = 6 # Change this to the number of parallel runs you want to run
+NUM_PARALLEL_RUNS = 1 # Change this to the number of parallel runs you want to run
 SAVE_COMMANDLINE_OUTPUT = True
+START_FROM_RUN_NUMBER = 98 # Change this to the run number you want to start from !!! WARNING !!! 1-based indexing
 
 parameter_values = {
     'features'                      : [200,100,'all'],                      
     'net-depth'                     : [0,1,2,4],
     'net-width'                     : [16,32,100,200],
     'dropout'                       : [0.5],
-    'learning-rate'                 : [0.00005,0.00001],
-    'batchsize'                     : [64,128],
+    'learning-rate'                 : [0.0001,0.00001],
+    'batchsize'                     : [128,256],
     'epochs'                        : [200,600],
     'k-folds'                       : [5],
     'oversampling-aggressiveness'   : [1.0],
@@ -42,7 +43,7 @@ parameter_values = {
 
 # MODES TO VERIFY
 problem = 'classification_task = ClassificationTask.FULL_8_CLASS_PROBLEM'
-fsize =   'FEATURE_WINDOW_SIZE = FeatureWindowSize._704windowed'
+fsize =   'FEATURE_WINDOW_SIZE = FeatureWindowSize._2112windowed'
 wm =      'WINDOWED_INPUT_MODE = WindowedInputMode._2D'
 
 notebook = './expressive-technique-classifier-phase3.ipynb'
@@ -134,7 +135,6 @@ if not os.path.exists(full_run_folder):
 
 OUTPUT_DIR = full_run_folder
 
-START_FROM_RUN_NUMBER = 1 # Change this to the run number you want to start from !!! WARNING !!! 1-based indexing
 
 
 start_from_run_index = START_FROM_RUN_NUMBER-1
@@ -403,8 +403,11 @@ for i,pd in enumerate(product):
             outfile_stderr = os.devnull
 
         with open(outfile_stdout, 'w') as outfile, open(outfile_stderr, 'w') as errfile:
-            process = subprocess.Popen(command.split(' '),stdout=outfile,stderr=errfile)
-            print("the commandline is {}".format(process.args))
+            if NUM_PARALLEL_RUNS > 1:
+                process = subprocess.Popen(command.split(' '),stdout=outfile,stderr=errfile)
+            else:
+                process = subprocess.Popen(command.split(' '))
+            # print("the commandline is {}".format(process.args))
             currently_running.append(process)
         print(command + '\n\n')
         time.sleep(1)
