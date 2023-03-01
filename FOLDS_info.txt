@@ -1,0 +1,18 @@
+Warning! Using custom K-Fold, which splits the dataset in the data from different players.
+Fold 1/6 - TestGuitarist: "DavRos"
+Fold 2/6 - TestGuitarist: "DomSte"
+Fold 3/6 - TestGuitarist: "GiaFer"
+Fold 4/6 - TestGuitarist: "LucFra"
+Fold 5/6 - TestGuitarist: "LucTur"
+Fold 6/6 - TestGuitarist: "LucTur2"
+
+6 players in the dataset
+1 - Player "DavRos" 	has 3542 note entries   0:  30  	1:  30  	2:  30  	3:  30  	4: 158  	5: 952  	6:1139  	7:1173  	
+2 - Player "DomSte" 	has 3404 note entries   0:  29  	1:  29  	2:  27  	3:  30  	4: 161  	5:1141  	6: 819  	7:1168  	
+3 - Player "GiaFer" 	has 3558 note entries   0:  20  	1:  29  	2:  30  	3:  30  	4: 159  	5:1082  	6:1090  	7:1118  	
+4 - Player "LucFra" 	has 3183 note entries   0:  30  	1:  30  	2:  29  	3:  30  	4: 139  	5: 959  	6: 991  	7: 975  	
+5 - Player "LucTur" 	has 3379 note entries   0:  27  	1:  30  	2:  30  	3:  30  	4: 153  	5:1055  	6: 998  	7:1056  	
+6 - Player "LucTur2" 	has 3570 note entries   0: 267  	1: 211  	2: 262  	3: 300  	4: 265  	5: 807  	6: 707  	7: 751  	
+__________________________________________________________________________________________________________________________________________________________________________
+                                          Tot:  0: 403  	1: 359  	2: 408  	3: 450  	4:1035  	5:5996  	6:5744  	7:6241  	
+as a result, the number of folds has been OVERWRITTEN and is now  6

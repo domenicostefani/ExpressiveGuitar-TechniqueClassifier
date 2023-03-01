@@ -14,6 +14,7 @@ NUM_PARALLEL_RUNS = 2 # Change this to the number of parallel runs you want to r
 SAVE_COMMANDLINE_OUTPUT = True
 START_FROM_RUN_NUMBER = 305 # Change this to the run number you want to start from !!! WARNING !!! 1-based indexing
 
+
 parameter_values = {
     'features'                      : [200,100,'all'],                      
     'net-depth'                     : [0,1,2,4],
@@ -27,7 +28,7 @@ parameter_values = {
     'conv'                          : [1],
     'conv-kernels'                  : ['3','5'],
     'conv-strides'                  : ['2','1'],
-    'conv-filters'                  : ['32','128'],
+    'conv-filters'                  : ['32','8'],
     'conv-activations'              : ['relu'],
     'conv-padding'                  : ['same'],
     'pool-layers'                   : ['M'],
@@ -403,8 +404,11 @@ for i,pd in enumerate(product):
             outfile_stderr = os.devnull
 
         with open(outfile_stdout, 'w') as outfile, open(outfile_stderr, 'w') as errfile:
-            process = subprocess.Popen(command.split(' '),stdout=outfile,stderr=errfile)
-            print("the commandline is {}".format(process.args))
+            if NUM_PARALLEL_RUNS > 1:
+                process = subprocess.Popen(command.split(' '),stdout=outfile,stderr=errfile)
+            else:
+                process = subprocess.Popen(command.split(' '))
+            # print("the commandline is {}".format(process.args))
             currently_running.append(process)
         print(command + '\n\n')
         time.sleep(1)

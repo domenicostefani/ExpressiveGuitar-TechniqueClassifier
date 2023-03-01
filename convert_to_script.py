@@ -11,7 +11,9 @@ def escape_double_quotes(instring):
 
 NOTEBOOK_PATH = "expressive-technique-classifier-phase3.ipynb"
 
-os.system('jupyter nbconvert --to script '+NOTEBOOK_PATH)
+command = 'jupyter nbconvert --to script '+NOTEBOOK_PATH
+print('running command: '+command)
+os.system(command)
 
 
 script_lines = []
