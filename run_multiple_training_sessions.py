@@ -10,26 +10,27 @@ print('''
 ''')
 
 DEBUG_MODE = False
-NUM_PARALLEL_RUNS = 6 # Change this to the number of parallel runs you want to run
+NUM_PARALLEL_RUNS = 2 # Change this to the number of parallel runs you want to run
 SAVE_COMMANDLINE_OUTPUT = True
+START_FROM_RUN_NUMBER = 305 # Change this to the run number you want to start from !!! WARNING !!! 1-based indexing
 
 parameter_values = {
     'features'                      : [200,100,'all'],                      
     'net-depth'                     : [0,1,2,4],
-    'net-width'                     : [16,32,100,200],
+    'net-width'                     : [16,32,100],
     'dropout'                       : [0.5],
-    'learning-rate'                 : [0.00005,0.00001],
-    'batchsize'                     : [64,128],
+    'learning-rate'                 : [0.00005,0.0001],
+    'batchsize'                     : [64,128,512],
     'epochs'                        : [200,600],
     'k-folds'                       : [5],
     'oversampling-aggressiveness'   : [1.0],
     'conv'                          : [1],
     'conv-kernels'                  : ['3','5'],
     'conv-strides'                  : ['2','1'],
-    'conv-filters'                  : ['8','32','128'],
+    'conv-filters'                  : ['32','128'],
     'conv-activations'              : ['relu'],
     'conv-padding'                  : ['same'],
-    'pool-layers'                   : ['M','A'],
+    'pool-layers'                   : ['M'],
 }
 
 
@@ -42,7 +43,7 @@ parameter_values = {
 
 # MODES TO VERIFY
 problem = 'classification_task = ClassificationTask.FULL_8_CLASS_PROBLEM'
-fsize =   'FEATURE_WINDOW_SIZE = FeatureWindowSize._704windowed'
+fsize =   'FEATURE_WINDOW_SIZE = FeatureWindowSize._4800windowed'
 wm =      'WINDOWED_INPUT_MODE = WindowedInputMode._2D'
 
 notebook = './expressive-technique-classifier-phase3.ipynb'
@@ -134,7 +135,6 @@ if not os.path.exists(full_run_folder):
 
 OUTPUT_DIR = full_run_folder
 
-START_FROM_RUN_NUMBER = 1 # Change this to the run number you want to start from !!! WARNING !!! 1-based indexing
 
 
 start_from_run_index = START_FROM_RUN_NUMBER-1
