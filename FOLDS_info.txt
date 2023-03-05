@@ -1,18 +1,16 @@
 Warning! Using custom K-Fold, which splits the dataset in the data from different players.
-Fold 1/6 - TestGuitarist: "DavRos"
-Fold 2/6 - TestGuitarist: "DomSte"
-Fold 3/6 - TestGuitarist: "GiaFer"
-Fold 4/6 - TestGuitarist: "LucFra"
-Fold 5/6 - TestGuitarist: "LucTur"
-Fold 6/6 - TestGuitarist: "LucTur2"
-
-6 players in the dataset
-1 - Player "DavRos" 	has 3542 note entries   0:  30  	1:  30  	2:  30  	3:  30  	4: 158  	5: 952  	6:1139  	7:1173  	
-2 - Player "DomSte" 	has 3404 note entries   0:  29  	1:  29  	2:  27  	3:  30  	4: 161  	5:1141  	6: 819  	7:1168  	
-3 - Player "GiaFer" 	has 3558 note entries   0:  20  	1:  29  	2:  30  	3:  30  	4: 159  	5:1082  	6:1090  	7:1118  	
-4 - Player "LucFra" 	has 3183 note entries   0:  30  	1:  30  	2:  29  	3:  30  	4: 139  	5: 959  	6: 991  	7: 975  	
-5 - Player "LucTur" 	has 3379 note entries   0:  27  	1:  30  	2:  30  	3:  30  	4: 153  	5:1055  	6: 998  	7:1056  	
-6 - Player "LucTur2" 	has 3570 note entries   0: 267  	1: 211  	2: 262  	3: 300  	4: 265  	5: 807  	6: 707  	7: 751  	
-__________________________________________________________________________________________________________________________________________________________________________
-                                          Tot:  0: 403  	1: 359  	2: 408  	3: 450  	4:1035  	5:5996  	6:5744  	7:6241  	
-as a result, the number of folds has been OVERWRITTEN and is now  6
+Fold 1/7 - TestGuitarist: "DavRos"
+Fold 2/7 - TestGuitarist: "DomSte"
+Fold 3/7 - TestGuitarist: "GiaFer"
+Fold 4/7 - TestGuitarist: "LucFra"
+Fold 5/7 - TestGuitarist: "LucTur"
+Fold 6/7 - TestGuitarist: "LucTur2"
+Fold 7/7 - TestGuitarist: "MicRos"
+7 players in the dataset
+1 - Player "DavRos" 	has 3538 note entries   0:  30  	1:  30  	2:  30  	3:  30  	4: 159  	5: 950  	6:1137  	7:1172  	
+2 - Player "DomSte" 	has 3405 note entries   0:  29  	1:  29  	2:  26  	3:  30  	4: 161  	5:1143  	6: 819  	7:1168  	
+3 - Player "GiaFer" 	has 3557 note entries   0:  20  	1:  29  	2:  29  	3:  30  	4: 160  	5:1083  	6:1088  	7:1118  	
+4 - Player "LucFra" 	has 3189 note entries   0:  30  	1:  30  	2:  29  	3:  30  	4: 140  	5: 957  	6: 995  	7: 978  	
+5 - Player "LucTur" 	has 3380 note entries   0:  27  	1:  30  	2:  30  	3:  30  	4: 154  	5:1056  	6: 998  	7:1055  	
+6 - Player "LucTur2" 	has 3550 note entries   0: 266  	1: 211  	2: 269  	3: 300  	4: 258  	5: 798  	6: 696  	7: 752  	
+7 - Player "MicRos" 	has 6990 note entries   0: 899  	1: 895  	2: 886  	3: 899  	4: 852  	5: 860  	6: 861  	7: 838  
