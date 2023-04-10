@@ -1,0 +1,26 @@
+Run arguments: {'features': 200, 'net_depth': 0, 'net_width': 16, 'dropout': 0.5, 'learning_rate': 1e-05, 'batchsize': 128, 'epochs': 600, 'k_folds': 5, 'oversampling_aggressiveness': 1.0, 'conv': 1, 'conv_kernels': '5', 'conv_strides': '2', 'conv_filters': '64', 'conv_activations': 'relu', 'conv_padding': 'same', 'pool_layers': 'A', 'verbose': False}
+
+
+
+Summary:
+Model: "guitar_timbre_classifier_20230220-224909"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv_0 (Conv2D)              (None, 14, 100, 64)       1664      
+_________________________________________________________________
+batchnorm_0 (BatchNormalizat (None, 14, 100, 64)       256       
+_________________________________________________________________
+Apool_0 (AveragePooling2D)   (None, 7, 50, 64)         0         
+_________________________________________________________________
+flatten_0 (Flatten)          (None, 22400)             0         
+_________________________________________________________________
+dropout_0 (Dropout)          (None, 22400)             0         
+_________________________________________________________________
+OUT_dense_0 (Dense)          (None, 8)                 179208    
+=================================================================
+Total params: 181,128
+Trainable params: 181,000
+Non-trainable params: 128
+_________________________________________________________________
+
