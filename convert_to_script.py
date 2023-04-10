@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
 
+# This script converts our Colab/Jupyter notebook to a python script
+# It is used to run the notebook via tmux
+#
+# It uses jupyter nbconvert and then removes all the ipython magic
+
 import os
 import re
 import json
