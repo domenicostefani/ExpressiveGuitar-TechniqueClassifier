@@ -16,3 +16,19 @@ ___
 of the pick hand)
 6.    **Pick Near Bridge** (Playing toward the bridge/saddle)
 7.    **Pick Over the Soundhole** (Playing over the sound hole) (NEUTRAL NON-)TECHNIQUE 
+
+___
+
+## Content of the repository
+
+- `data/`: Folder containing the links to the feature dataset files. Download them in the folder with the links file.
+- `phase3results/`: Results of Experiment1 for a scientific paper submitted to IEEE/ACM Transactions on Audio, Speech, and Language Processing (TASLP).
+- `convert_to_script.py` : Script to convert the Colab/Jupyter notebook to a Python script.
+- `expressive-technique-classifier-phase3.ipynb` : Jupyter notebook with the code to train and test the classifier.
+- `guitarists_touch.ipynb`: Jupyter notebook with the code to train and test the classifier for Experiment 3.
+- `run_grid_search.py` : Script to run a grid search on the classifier.
+
+Contact Domenico Stefani for any issues with running the code to repeat the experiments.  
+
+domenico[dot]stefani[at]unitn[dot]it  
+[work.domenicostefani.com](http://work.domenicostefani.com/)
