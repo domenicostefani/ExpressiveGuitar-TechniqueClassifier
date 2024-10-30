@@ -22,7 +22,7 @@ ___
 ## Content of the repository
 
 - `data/`: Folder containing the links to the feature dataset files. Download them in the folder with the links file.
-- `phase3results/`: Results of Experiment1 for a scientific paper submitted to IEEE/ACM Transactions on Audio, Speech, and Language Processing (TASLP).
+- `phase3results/`: Experimental results (see paper).
 - `convert_to_script.py` : Script to convert the Colab/Jupyter notebook to a Python script.
 - `expressive-technique-classifier-phase3.ipynb` : Jupyter notebook with the code to train and test the classifier.
 - `guitarists_touch.ipynb`: Jupyter notebook with the code to train and test the classifier for Experiment 3.
